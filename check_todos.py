@@ -60,18 +60,21 @@ def check_issue_exists(owner, repo, issue_num, token):
         response = requests.get(url, headers=headers, timeout=10)
         
         if response.status_code == 404:
+            print(f"DEBUG: Issue #{issue_num} not found (404)")
             return False, None
         
         if response.status_code == 200:
             issue = response.json()
             is_open = issue.get('state') == 'open'
+            print(f"DEBUG: Issue #{issue_num} exists, state={issue.get('state')}")
             return True, is_open
         
-        print(f"Warning: API returned status {response.status_code} for issue #{issue_num}")
+        print(f"WARNING: API returned status {response.status_code} for issue #{issue_num}")
+        print(f"DEBUG: Response: {response.text[:200]}")
         return True, None  # Assume it exists if we can't determine
         
     except requests.RequestException as e:
-        print(f"Warning: Failed to check issue #{issue_num}: {e}")
+        print(f"WARNING: Failed to check issue #{issue_num}: {e}")
         return True, None  # Assume it exists if we can't connect
 
 def find_todos(root_dir):
